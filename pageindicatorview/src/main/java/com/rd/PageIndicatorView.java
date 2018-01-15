@@ -421,7 +421,8 @@ public class PageIndicatorView extends View implements ViewPager.OnPageChangeLis
      * @param type type of animation, one of {@link AnimationType}
      */
     public void setAnimationType(@Nullable AnimationType type) {
-        manager.onValueUpdated(null);
+        // 或許這不需要呼叫, 因為做了兩次invalidate
+        //manager.onValueUpdated(null);
 
         if (type != null) {
             manager.indicator().setAnimationType(type);
@@ -550,6 +551,17 @@ public class PageIndicatorView extends View implements ViewPager.OnPageChangeLis
 
         setSelection(position);
         indicator.setAnimationType(animationType);
+    }
+
+    /**
+     *  [Modify by Yomi]
+     *  Change the view pager according to the indicator's position
+     * */
+    public void setSelected(int pos, boolean isNeedChangeViewPager) {
+        if(isNeedChangeViewPager) {
+            this.viewPager.setCurrentItem(pos);
+        }
+        setSelected(pos);
     }
 
     /**
@@ -756,6 +768,7 @@ public class PageIndicatorView extends View implements ViewPager.OnPageChangeLis
     }
 
     private int adjustPosition(int position){
+        // 若位置 < 0 或 > count 則設定為 0 或 count - 1
         Indicator indicator = manager.indicator();
         int count = indicator.getCount();
         int lastPosition = count - 1;
