@@ -30,7 +30,7 @@ import com.rd.utils.CoordinatesUtils;
 import com.rd.utils.DensityUtils;
 import com.rd.utils.IdUtils;
 
-public class PageIndicatorView extends View implements ViewPager.OnPageChangeListener, IndicatorManager.Listener {
+public class PageIndicatorView extends View implements ViewPager.OnPageChangeListener, IndicatorManager.Listener, DrawController.ClickListener {
 
     private IndicatorManager manager;
     private DataSetObserver setObserver;
@@ -135,6 +135,11 @@ public class PageIndicatorView extends View implements ViewPager.OnPageChangeLis
 			manager.indicator().setInteractiveAnimation(isInteractionEnabled);
 		}
 	}
+
+    @Override
+    public void onIndicatorClicked(int position) {
+        setSelected(position, true);
+    }
 
     /**
      * Set static number of circle indicators to be displayed.
@@ -607,8 +612,8 @@ public class PageIndicatorView extends View implements ViewPager.OnPageChangeLis
         manager.animate().interactive(progress);
     }
 
-    public void setClickListener(@Nullable DrawController.ClickListener listener) {
-        manager.drawer().setClickListener(listener);
+    public void addIndicatorClickListener(@Nullable DrawController.ClickListener listener) {
+        manager.drawer().addIndicatorClickListener(listener);
     }
 
     private void init(@Nullable AttributeSet attrs) {
@@ -625,6 +630,8 @@ public class PageIndicatorView extends View implements ViewPager.OnPageChangeLis
     private void initIndicatorManager(@Nullable AttributeSet attrs) {
         manager = new IndicatorManager(this);
         manager.drawer().initAttributes(getContext(), attrs);
+
+        addIndicatorClickListener(this);
 
         Indicator indicator = manager.indicator();
         indicator.setPaddingLeft(getPaddingLeft());

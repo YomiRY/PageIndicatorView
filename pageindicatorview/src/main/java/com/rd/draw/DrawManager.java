@@ -30,14 +30,14 @@ public class DrawManager {
 	@NonNull
 	public Indicator indicator() {
 		if (indicator == null) {
-			indicator = new Indicator();
+				indicator = new Indicator();
 		}
 
 		return indicator;
 	}
 
-	public void setClickListener(@Nullable DrawController.ClickListener listener) {
-		drawController.setClickListener(listener);
+	public void addIndicatorClickListener(@Nullable DrawController.ClickListener listener) {
+		drawController.addIndicatorClickListener(listener);
 	}
 
 	public void touch(@Nullable MotionEvent event) {

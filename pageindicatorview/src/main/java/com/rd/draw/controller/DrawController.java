@@ -3,6 +3,7 @@ package com.rd.draw.controller;
 import android.graphics.Canvas;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.SparseArray;
 import android.view.MotionEvent;
 import com.rd.animation.data.Value;
 import com.rd.animation.type.AnimationType;
@@ -10,12 +11,16 @@ import com.rd.draw.data.Indicator;
 import com.rd.draw.drawer.Drawer;
 import com.rd.utils.CoordinatesUtils;
 
+import java.util.ArrayList;
+
 public class DrawController {
 
 	private Value value;
 	private Drawer drawer;
 	private Indicator indicator;
-	private ClickListener listener;
+//	private ClickListener listener;
+	private ArrayList<ClickListener> mListenerList;
+
 
 	public interface ClickListener {
 
@@ -25,15 +30,27 @@ public class DrawController {
 	public DrawController(@NonNull Indicator indicator) {
 		this.indicator = indicator;
 		this.drawer = new Drawer(indicator);
+		this.mListenerList = new ArrayList<>();
 	}
 
 	public void updateValue(@Nullable Value value) {
         this.value = value;
     }
 
-	public void setClickListener(@Nullable ClickListener listener) {
-		this.listener = listener;
+	public void addIndicatorClickListener(@Nullable ClickListener listener) {
+	    if(mListenerList.contains(listener)) {
+	        return;
+        }
+        mListenerList.add(listener);
+//		this.listener = listener;
 	}
+
+    public void removeIndicatorClickListener(@Nullable ClickListener listener) {
+        if (!mListenerList.contains(listener)) {
+            return;
+        }
+        mListenerList.remove(listener);
+    }
 
 	public void touch(@Nullable MotionEvent event) {
 		if (event == null) {
@@ -49,10 +66,13 @@ public class DrawController {
 	}
 
 	private void onIndicatorTouched(float x, float y) {
-		if (listener != null) {
+		if (mListenerList != null && !mListenerList.isEmpty()) {
 			int position = CoordinatesUtils.getPosition(indicator, x, y);
 			if (position >= 0) {
-				listener.onIndicatorClicked(position);
+//				listener.onIndicatorClicked(position);
+				for(ClickListener listener : mListenerList) {
+                    listener.onIndicatorClicked(position);
+                }
 			}
 		}
 	}
